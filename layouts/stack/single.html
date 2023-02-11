@@ -1,0 +1,98 @@
+{{ define "main" }}
+
+{{ $permalink := .RelPermalink }}
+{{ $date := .Date.Format "January 2, 2006" }}
+{{ $lastmod := .Lastmod.Format "January 2, 2006" }}
+{{- $dataname := .File.BaseFileName -}}
+
+<div class="flex h-screen relative">
+
+  <section
+    class="will-change-transform transform transition-transform -translate-x-[200%] absolute top-0 left-0 lg:relative
+  lg:translate-x-0 lg:min-w-[400px] lg:w-1/4 h-full bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 lg:flex flex-col py-3 overflow-y-auto scroll-area">
+    {{$Section := .Site.GetPage "section" .Section }}
+    {{ with $Section }}
+    <a href="{{ .Permalink }}">
+      <h2 class="font-bold mb-5 py-1 pl-12 pr-3 md:px-3">{{ .Title }}</h2>
+    </a>
+    {{- partial "search.html" . -}}
+    <div class="space-y-2.5">
+      {{ range .Data.Pages -}}
+      {{ $isCurrentPage := eq .RelPermalink $permalink }}
+      <a class="article block px-3 py-4 {{ if $isCurrentPage }} bg-slate-900 dark:bg-slate-700 text-slate-50 {{ else }} hover:bg-slate-200 dark:hover:bg-slate-700 {{ end }}"
+        href="{{ .RelPermalink }}">
+        {{ $title := .Params.title }}
+        {{ with .Params.images }}
+        {{- range first 1 . }}
+        <img class="rounded max-w-full mb-4" src="{{ . }}" alt="{{ $title }}" />
+        {{ end -}}
+        {{ end }}
+        <h3 class="text-lg font-semibold mb-0.5">{{ $title }}</h3>
+        <div
+          class="text-sm {{ if $isCurrentPage }} text-slate-400 {{ else }} text-slate-500 dark:text-slate-400 {{ end }} line-clamp-2">
+          {{ .Description }}
+        </div>
+      </a>
+      {{ end -}}
+    </div>
+    {{ end -}}
+  </section>
+
+  <div class="overflow-y-auto h-screen w-full">
+    <article class="px-6 py-20 w-full mx-auto prose lg:prose-lg h-fit dark:prose-invert prose-img:mx-auto">
+
+      {{ $title := .Params.title }}
+      <h1 class="!mb-2">{{ $title }}</h1>
+
+      <p>{{ .Description }}</p>
+
+      {{ if .Date }}
+      <p class="text-sm text-slate-500 !mb-8"> Planted {{ $date }}
+        {{ if ne $lastmod $date}}
+        <br /> Pruned {{ .Lastmod.Format "January 2, 2006" }}
+        {{ end }}
+      </p>
+      {{ end }}
+
+      {{ with .Params.images }}
+      {{- range first 1 . }}
+      <img class="rounded max-w-full mx-auto mb-4" src="{{ . }}" alt="{{ $title }}" />
+      {{ end -}}
+      {{ end }}
+
+      {{ .Content }}
+    </article>
+
+    <div class="px-6 pb-6 w-full lg:w-[580px] mx-auto flex flex-col gap-5 h-fit prose-img:mx-auto">
+      {{ range $index, $stack := (index .Site.Data $dataname) }}
+      <a href="{{ .link }}" target="_blank" rel="noopener noreferrer"
+        class="flex items-center gap-2.5 p-4 rounded hover:bg-slate-200 dark:hover:bg-slate-700 group {{ if not (modBool $index 2) }} flex-row-reverse text-right {{ end }}">
+        {{ if .icon }}
+        <img src="{{ .icon }}" alt="{{ .name }}" class="w-20 h-20" />
+        {{ else }}
+        <div
+          class="w-20 h-20 text-7xl uppercase grid place-items-center p-4 rounded bg-slate-500 text-white group-hover:text-slate-200 dark:text-slate-900 dark:group-hover:text-slate-700 font-bold">
+          <span class="mt-2 ml-2">{{ substr .name 0 1 }}</span>
+        </div>
+        {{ end }}
+        <div>
+          <h2 class="text-xl font-semibold">{{ .name }}</h2>
+          {{ if .description }}
+          <p class="text-slate-400 dark:text-slate-500">{{ .description }}</p>
+          {{ end }}
+          {{ if .tag }}
+          <p
+            class="text-slate-500 text-xs mt-1 px-1.5 py-0.5 rounded-full border border-slate-300 dark:border-slate-600 inline-block">
+            #{{
+            .tag }}</p>
+          {{ end }}
+        </div>
+      </a>
+      {{ end }}
+    </div>
+
+  </div>
+
+</div>
+
+{{ end }}
