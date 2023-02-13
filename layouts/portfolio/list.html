@@ -12,10 +12,9 @@
       <a class="block px-3 py-4 row-span-2" href="{{ .RelPermalink }}">
         {{ $title := .Params.title }}
 
-        {{ with .Params.images }}
-        {{- range first 1 . }}
-        <img class="rounded max-w-full w-full mb-4" src="{{ . }}" alt="{{ $title }}" />
-        {{ end -}}
+        {{- $featuredimage := .Params.images -}}
+        {{ with and $featuredimage (ne .Params.withfeatured "no") }}
+        <img class="rounded max-w-full w-full mb-4" src="{{ index $featuredimage 0 | absURL }}" alt="{{ $title }}" />
         {{ end }}
         <h3 class="text-lg font-semibold mb-0.5 lg:text-xl 2xl:text-3xl">{{ $title }}</h3>
         {{ with .Description }}

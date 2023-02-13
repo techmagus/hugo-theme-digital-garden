@@ -15,10 +15,9 @@
     <p class="text-sm text-slate-500 !mb-8">{{ .Date.Format "January 2, 2006" }}</p>
     {{ end }}
 
-    {{ with .Params.images }}
-    {{- range first 1 . }}
-    <img class="rounded max-w-full w-full mb-4" src="{{ . }}" alt="{{ $title }}" />
-    {{ end -}}
+    {{- $featuredimage := .Params.images -}}
+    {{ with and $featuredimage (ne .Params.withfeatured "no") }}
+    <img class="rounded max-w-full w-full mb-4" src="{{ index $featuredimage 0 | absURL }}" alt="{{ $title }}" />
     {{ end }}
 
     {{ .Content }}
